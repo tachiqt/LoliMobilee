@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "569299028543",
+    "project_id": "lolii-4c25f",
+    "storage_bucket": "lolii-4c25f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569299028543:android:a88d901e8f164c591ac68a",
+        "android_client_info": {
+          "package_name": "com.example.lolimobilee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkNPuWMyxjqYXtd_LtxQSN0uHRac5fBdI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

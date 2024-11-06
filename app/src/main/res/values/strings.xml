@@ -1,0 +1,125 @@
+<resources>
+    <string name="app_name">LoliMobilee</string>
+    <string name="gender_hint">Gender</string>
+    <string-array name="gender_array">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="terms_and_conditions">
+       Terms and Conditions
+        Last Updated: 11/03/2024
+
+        Welcome to the Loli, an application developed to work with the Loli Companion Robot to support teenagers in improving their social and communication skills. By using this app, you agree to the following Terms and Conditions. Please read them carefully.
+
+        1. Acceptance of Terms
+        By downloading, accessing, or using this app, you confirm that you have read, understood, and agree to abide by these Terms and Conditions. If you do not agree, please do not use this application.
+
+        2. Eligibility
+        This app is intended for use by teenagers and their parents or guardians. Users under the age of 18 must have permission from a parent or legal guardian to use this app. Parents and guardians are responsible for monitoring their child’s use of the app.
+
+        3. Purpose of the Application
+        The app is designed to connect with the Loli Companion Robot to help teenagers improve their social and communication skills. It uses data collected during interactions to provide personalized recommendations and feedback to the user. The app is not intended to replace mental health professionals or therapy. If you experience mental health issues, please seek assistance from a licensed mental health professional.
+
+        4. User Account and Privacy
+        To use the app, users may be required to create an account. You agree to provide accurate and current information during registration and to keep your account information secure. Your personal information will be handled in compliance with our Privacy Policy, which describes how we collect, use, and protect your data.
+
+        5. Data Collection and Use
+        The app collects and analyzes interactions between the user and the Loli Companion Robot to provide personalized recommendations. This includes data such as conversation inputs, response times, and emotional tone. We respect your privacy, and all collected data is used solely to enhance your experience and improve the effectiveness of the app. For more details, please refer to our [Privacy Policy](link to Privacy Policy).
+
+        6. User Responsibilities
+        You agree to use the app responsibly and ethically. You will not:
+        - Misuse the app or its services for any illegal or unauthorized purpose.
+        - Attempt to hack, reverse engineer, or disrupt the functionality of the app.
+        - Upload or share any offensive, inappropriate, or harmful content while using the app.
+
+        7. Safety and Well-being
+        The app is designed to support positive social skill development. If you experience any discomfort, emotional distress, or confusion while using the app, please discontinue use and consult a trusted adult or mental health professional.
+
+        8. Disclaimer of Warranties
+        The app and the Loli Companion Robot are provided on an "as-is" basis. We do not guarantee that the app will be uninterrupted or error-free. We are not responsible for any potential issues or interruptions in the app’s performance, but we will strive to resolve any reported issues as soon as possible.
+
+        9. Limitation of Liability
+        In no event will we be liable for any indirect, incidental, or consequential damages arising from your use of the app, including, but not limited to, emotional distress or data loss. Our total liability for any claims related to your use of the app shall not exceed the amount you have paid, if any, for accessing the app.
+
+        10. Intellectual Property
+        All content within the app, including but not limited to logos, trademarks, images, and text, is the property of [App Name] or its licensors. You may not copy, modify, distribute, or use the content in any way other than as intended within the app.
+
+        11. Modifications to Terms
+        We reserve the right to modify these Terms and Conditions at any time. Any changes will be effective immediately upon posting within the app or on our website. Continued use of the app after any such changes constitutes acceptance of the new terms.
+
+        12. Termination
+        We reserve the right to terminate or restrict your access to the app at any time, without notice, if you violate any of these Terms and Conditions or for any other reason. Upon termination, all licenses and rights granted to you will cease immediately.
+
+        13. Governing Law and Jurisdiction
+        These Terms and Conditions shall be governed by and construed in accordance with the laws of the Republic of the Philippines. Any disputes arising from these terms or the use of the app shall be subject to the exclusive jurisdiction of the courts located in Lipa, Philippines.
+
+        14. Contact Information
+        If you have questions or concerns regarding these Terms and Conditions, please contact us at markvincentperez2@gmail.com or 09684272859.
+
+        By using this application, you acknowledge that you have read, understood, and agree to abide by these Terms and Conditions.
+    </string>
+
+    <string name="privacy_policy">
+        Privacy Policy
+
+        Last Updated: 11/03/2024
+
+        Welcome to the Loli Privacy Policy. This document describes how we collect, use, and protect your personal information when you use our app with the Loli Companion Robot. Your privacy is of utmost importance to us, and we are committed to protecting your data responsibly.
+
+        1. Information We Collect
+        We collect the following types of information to enhance the experience and functionality of the app:
+
+        - Personal Information: Information provided during registration, including your name, email address, and age.
+        - Usage Data: Information about your interactions with the app and the Loli Companion Robot, such as conversation inputs, response times, and engagement patterns.
+        - Device Information: Information about the device you use to access the app, including device type, operating system, and unique device identifiers.
+
+        2. How We Use Your Information
+        The information we collect is used to improve the app’s functionality and personalize the experience. Specifically, we use your data for the following purposes:
+
+        - Personalization: To provide personalized feedback and recommendations based on your interactions with the Loli Companion Robot.
+        - Analytics: To analyze usage trends and improve the apps features and functionality.
+        - Support and Communication: To contact you for customer support, provide updates, and send you important information about the app.
+
+        3. Sharing of Information
+        We do not sell, trade, or otherwise transfer your personal information to outside parties. We may, however, share your information under the following circumstances:
+
+        - With Consent: We may share your information with third parties when we have your consent to do so.
+        - For Legal Compliance: We may disclose your information to comply with applicable laws, regulations, legal processes, or enforceable governmental requests.
+        - For Service Providers: We may share information with trusted third-party service providers who help us operate the app and improve its functionality. These providers are required to keep your information confidential and secure.
+
+        4. Data Security
+        We implement various security measures to protect your information. These include encryption, access controls, and regular security assessments to safeguard against unauthorized access, alteration, disclosure, or destruction of your personal information.
+
+        5. Data Retention
+        We retain your personal information for as long as necessary to fulfill the purposes outlined in this Privacy Policy, unless a longer retention period is required or permitted by law. When no longer needed, your information will be securely deleted.
+
+        6. Your Rights and Choices
+        Under applicable laws, you may have rights regarding your personal information. These include:
+
+        - Access: You may request access to the personal information we hold about you.
+        - Correction: You may request corrections to inaccurate or incomplete personal information.
+        - Deletion: You may request deletion of your personal information, subject to legal limitations.
+        - Objection: You may object to certain uses of your data, such as marketing.
+        - Withdrawal of Consent: Where we rely on your consent to process data, you may withdraw it at any time.
+
+        To exercise these rights, please contact us at markvincentperez2@gmail.com.
+
+        7. Children’s Privacy
+        The app is intended for use by teenagers, with parental consent required for users under the age of 18. We do not knowingly collect information from children under the age of 13. If we discover that we have inadvertently collected such information, we will promptly delete it.
+
+        8. Changes to this Privacy Policy
+        We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. Any changes will be posted within the app, and the “Last Updated” date will be revised. We encourage you to review this Privacy Policy periodically.
+
+        9. Contact Us
+        If you have questions or concerns regarding this Privacy Policy, please contact us at markvincentperez2@gmail.com or 09684272859.
+
+
+    </string>
+</resources>

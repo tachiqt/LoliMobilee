@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme using Material Components -->
+    <style name="Base.Theme.LoliMobilee" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.LoliMobilee" parent="Base.Theme.LoliMobilee" />
+
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.LoliMobilee</item>
+    </style>
+
+    <style name="ToolbarWithLogo" parent="@style/Widget.MaterialComponents.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="logo">@drawable/logo</item>
+        <item name="titleTextAppearance">@style/ToolbarTitleAppearance</item>
+    </style>
+
+    <style name="ToolbarTitleAppearance" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:layout_marginStart">16dp</item>
+    </style>
+</resources>

@@ -21,6 +21,12 @@
         android:theme="@style/Theme.LoliMobilee"
         tools:targetApi="31">
         <activity
+            android:name=".editjournal"
+            android:exported="false" />
+        <activity
+            android:name=".expandjournal"
+            android:exported="false" />
+        <activity
             android:name=".addjournal"
             android:exported="false" />
         <activity

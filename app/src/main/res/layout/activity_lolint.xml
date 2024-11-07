@@ -68,7 +68,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 app:srcCompat="@drawable/baseline_arrow_right_alt_24"
-                tools:visibility="invisible" />
+                tools:visibility="gone" />
 
         </LinearLayout>
 

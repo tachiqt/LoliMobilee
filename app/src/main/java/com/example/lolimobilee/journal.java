@@ -37,8 +37,8 @@ public class journal extends AppCompatActivity {
         setupRecyclerView();
 
         // Initialize navigation and button listeners
-        setupBottomNav();
-        setupAddButton();
+      //  setupBottomNav();
+      //  setupAddButton();
     }
 
     private void setupRecyclerView() {
@@ -47,7 +47,7 @@ public class journal extends AppCompatActivity {
         // Example: journalRecyclerView.setAdapter(new JournalAdapter(journalEntries));
         Toast.makeText(this, "RecyclerView Setup", Toast.LENGTH_SHORT).show();
     }
-
+/*
     private void setupBottomNav() {
         // Access the navigation items and set click listeners
         findViewById(R.id.assessment).setOnClickListener(v -> openAssessment());
@@ -89,6 +89,6 @@ public class journal extends AppCompatActivity {
     private void openAddJournalEntry() {
         // Navigate to Add Journal Entry screen
         Toast.makeText(this, "Add new Journal Entry", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, AddJournalEntryActivity.class));
+        startActivity(new Intent(this, AddJournalEntryActivity.class));*/
     }
-}
+

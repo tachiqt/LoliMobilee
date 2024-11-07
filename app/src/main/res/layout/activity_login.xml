@@ -104,7 +104,17 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
+        <!-- Forgot Password TextView -->
+        <TextView
+            android:id="@+id/forgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Forgot Password?"
+            android:textColor="@color/violet"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_gravity="end" />
 
         <!-- Sign In Button -->
         <com.google.android.material.button.MaterialButton
@@ -118,7 +128,6 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:cornerRadius="10dp" />
-
 
         <TextView
             android:id="@+id/registernav"

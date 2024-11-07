@@ -1,24 +1,96 @@
 package com.example.lolimobilee;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class expandjournal extends AppCompatActivity {
+
+    private TextView journalTitle, journalDate, journalDescription;
+    private String entryId; // Firestore document ID for the journal entry
+    private FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore instance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_expandjournal);
+
+        // Set padding for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Initialize views
+        journalTitle = findViewById(R.id.journalTitle);
+        journalDate = findViewById(R.id.journalDate);
+        journalDescription = findViewById(R.id.journalDescription);
+        Button editButton = findViewById(R.id.editButton);
+        Button deleteButton = findViewById(R.id.deleteButton);
+        ImageButton backButton = findViewById(R.id.backButton);
+
+        // Retrieve data from Intent
+        Intent intent = getIntent();
+        entryId = intent.getStringExtra("entryId");
+        String title = intent.getStringExtra("title");
+        String date = intent.getStringExtra("date");
+        String description = intent.getStringExtra("description");
+
+        // Set data in TextView fields
+        journalTitle.setText(title);
+        journalDate.setText(date);
+        journalDescription.setText(description);
+
+        // Set up Back button to go back
+        backButton.setOnClickListener(v -> finish());
+
+        // Set up Edit button to open editjournal activity
+        editButton.setOnClickListener(v -> {
+            Intent editIntent = new Intent(expandjournal.this, editjournal.class);
+            editIntent.putExtra("entryId", entryId);
+            editIntent.putExtra("title", title);
+            editIntent.putExtra("description", description);
+            startActivity(editIntent);
+        });
+
+        // Set up Delete button with a confirmation dialog
+        deleteButton.setOnClickListener(v -> showDeleteConfirmationDialog());
+    }
+
+    private void showDeleteConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Journal Entry")
+                .setMessage("Are you sure you want to delete this journal entry?")
+                .setPositiveButton("Yes", (dialog, which) -> deleteJournalEntry())
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void deleteJournalEntry() {
+        // Delete the journal entry from Firestore using entryId
+        db.collection("journalEntries").document(entryId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(expandjournal.this, "Journal entry deleted", Toast.LENGTH_SHORT).show();
+                    finish(); // Close the activity after deletion
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(expandjournal.this, "Failed to delete journal entry", Toast.LENGTH_SHORT).show();
+                });
     }
 }

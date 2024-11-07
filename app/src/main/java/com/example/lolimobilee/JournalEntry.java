@@ -2,14 +2,30 @@ package com.example.lolimobilee;
 
 public class JournalEntry {
 
+    private String id;
     private String title;
     private String date;
-    private String preview; // Added preview field
+    private String description;
 
-    public JournalEntry(String title, String date, String preview) {
+
+    public JournalEntry() {
+    }
+
+    // Constructor with parameters
+    public JournalEntry(String id, String title, String date, String description) {
+        this.id = id;
         this.title = title;
         this.date = date;
-        this.preview = preview;
+        this.description = description;
+    }
+
+    // Getters and setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -28,11 +44,11 @@ public class JournalEntry {
         this.date = date;
     }
 
-    public String getPreview() {
-        return preview;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPreview(String preview) {
-        this.preview = preview;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

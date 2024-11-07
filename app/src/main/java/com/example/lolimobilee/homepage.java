@@ -6,7 +6,6 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,7 +13,10 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +25,13 @@ public class homepage extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final String TAG = "homepage";
+    private List<JournalEntry> journalEntries;
+    private JournalEntryAdapter adapter;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_homepage);
 
         // Set padding for system bars
@@ -38,15 +42,12 @@ public class homepage extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        String userId = intent.getStringExtra("userId");
-
+        userId = intent.getStringExtra("userId");
 
         TextView helloText = findViewById(R.id.helloText);
 
         if (userId != null) {
             Log.d(TAG, "Received userId: " + userId);
-
-            // Fetch user details from Firestore
             db.collection("users").document(userId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
@@ -72,17 +73,73 @@ public class homepage extends AppCompatActivity {
             helloText.setText("Hi, User!");
         }
 
-        // Set up the RecyclerView for journal entries
+        // Initialize the RecyclerView and adapter
         RecyclerView journalRecyclerView = findViewById(R.id.journalRecyclerView);
         journalRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Sample data for journal entries
-        List<JournalEntry> journalEntries = new ArrayList<>();
-        journalEntries.add(new JournalEntry("Reflecting on My Day", "2023-12-18", "Today was a productive day. I accomplished..."));
-        journalEntries.add(new JournalEntry("Setting New Goals", "2023-12-17", "I decided to focus on improving my..."));
-
-        // Set up the adapter with the journal entries
-        JournalEntryAdapter adapter = new JournalEntryAdapter(journalEntries);
+        journalEntries = new ArrayList<>();
+        adapter = new JournalEntryAdapter(this, journalEntries, userId);
         journalRecyclerView.setAdapter(adapter);
+
+        // Load journal entries from Firestore
+        loadJournalEntries();
+
+        // Handle "Add Journal" button click
+        findViewById(R.id.addJournalButton).setOnClickListener(v -> {
+            Intent addIntent = new Intent(homepage.this, addjournal.class);
+            addIntent.putExtra("userId", userId);
+            startActivity(addIntent);
+        });
+    }
+
+    private void loadJournalEntries() {
+        db.collection("journalEntries")
+                .whereEqualTo("userId", userId)
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    JournalEntry newEntry = dc.getDocument().toObject(JournalEntry.class);
+                                    newEntry.setId(dc.getDocument().getId()); // Set the document ID
+                                    journalEntries.add(newEntry);
+                                    adapter.notifyItemInserted(journalEntries.size() - 1);
+                                    break;
+
+                                case MODIFIED:
+                                    JournalEntry modifiedEntry = dc.getDocument().toObject(JournalEntry.class);
+                                    modifiedEntry.setId(dc.getDocument().getId()); // Set the document ID
+                                    int modifiedIndex = getIndexById(dc.getDocument().getId());
+                                    if (modifiedIndex != -1) {
+                                        journalEntries.set(modifiedIndex, modifiedEntry);
+                                        adapter.notifyItemChanged(modifiedIndex);
+                                    }
+                                    break;
+
+                                case REMOVED:
+                                    int removedIndex = getIndexById(dc.getDocument().getId());
+                                    if (removedIndex != -1) {
+                                        journalEntries.remove(removedIndex);
+                                        adapter.notifyItemRemoved(removedIndex);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                });
+    }
+
+    private int getIndexById(String id) {
+        for (int i = 0; i < journalEntries.size(); i++) {
+            if (journalEntries.get(i).getId().equals(id)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

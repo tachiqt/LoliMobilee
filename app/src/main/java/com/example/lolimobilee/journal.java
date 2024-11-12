@@ -2,93 +2,148 @@ package com.example.lolimobilee;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
-
+import android.widget.ImageView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.ArrayList;
+import java.util.List;
 
 public class journal extends AppCompatActivity {
 
+    private static final String TAG = "journal";
     private RecyclerView journalRecyclerView;
+    private JournalEntryAdapter journalAdapter;
+    private BottomNavBar bottomNavBar;
+    private String userId;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private List<JournalEntry> journalEntries = new ArrayList<>();
+    private List<JournalEntry> filteredJournalEntries = new ArrayList<>();
+    private FloatingActionButton addJournalFab;
+    private TextInputEditText searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_journal);
+        userId = getIntent().getStringExtra("userId");
 
-        // Apply window insets for edge-to-edge layout
+        // Set up the search bar
+        searchBar = findViewById(R.id.searchBar);
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                filterJournalEntries(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // Initialize RecyclerView and other UI elements
         journalRecyclerView = findViewById(R.id.journalRecyclerView);
-        setupRecyclerView();
+        journalRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        journalAdapter = new JournalEntryAdapter(this, filteredJournalEntries, userId);
+        journalRecyclerView.setAdapter(journalAdapter);
 
-        // Initialize navigation and button listeners
-      //  setupBottomNav();
-      //  setupAddButton();
+        loadJournalEntries();
+
+        ImageView assessmentIcon = findViewById(R.id.assessment);
+        ImageView bookIcon = findViewById(R.id.bookIcon);
+        ImageView taskIcon = findViewById(R.id.taskIcon);
+        ImageView accountIcon = findViewById(R.id.account);
+        FloatingActionButton dashboardIcon = findViewById(R.id.dashboardIcon);
+
+        bottomNavBar = new BottomNavBar(this, userId, assessmentIcon, bookIcon, taskIcon, accountIcon, dashboardIcon);
+
+        addJournalFab = findViewById(R.id.addIcon);
+        addJournalFab.setOnClickListener(v -> {
+            Intent intent = new Intent(journal.this, addjournal.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
     }
 
-    private void setupRecyclerView() {
-        // Set up RecyclerView for displaying journal entries
-        // This should ideally have an adapter setup for your journal entries
-        // Example: journalRecyclerView.setAdapter(new JournalAdapter(journalEntries));
-        Toast.makeText(this, "RecyclerView Setup", Toast.LENGTH_SHORT).show();
-    }
-/*
-    private void setupBottomNav() {
-        // Access the navigation items and set click listeners
-        findViewById(R.id.assessment).setOnClickListener(v -> openAssessment());
-        findViewById(R.id.bookIcon).setOnClickListener(v -> openJournal());
-        findViewById(R.id.taskIcon).setOnClickListener(v -> openTasks());
-        findViewById(R.id.account).setOnClickListener(v -> openAccount());
-    }
-
-    private void setupAddButton() {
-        // Floating action button for adding new journal entries
-        FloatingActionButton addIcon = findViewById(R.id.addIcon);
-        addIcon.setOnClickListener(v -> openAddJournalEntry());
-    }
-
-    private void openAssessment() {
-        // Navigate to Assessment screen
-        Toast.makeText(this, "Opening Assessment", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, AssessmentActivity.class));
-    }
-
-    private void openJournal() {
-        // Refresh or open the journal screen (or reload the journal list)
-        Toast.makeText(this, "Refreshing Journal", Toast.LENGTH_SHORT).show();
-        // Code to refresh journal entries can be added here
-    }
-
-    private void openTasks() {
-        // Navigate to Tasks screen
-        Toast.makeText(this, "Opening Tasks", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, TasksActivity.class));
+    private void loadJournalEntries() {
+        db.collection("journalEntries")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("status", "created") // Only load entries with status "created"
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
+                    if (querySnapshot != null) {
+                        journalEntries.clear();
+                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
+                            JournalEntry entry = dc.getDocument().toObject(JournalEntry.class);
+                            entry.setId(dc.getDocument().getId());
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    journalEntries.add(entry);
+                                    break;
+                                case MODIFIED:
+                                    int modifiedIndex = getJournalEntryIndexById(entry.getId());
+                                    if (modifiedIndex != -1) {
+                                        journalEntries.set(modifiedIndex, entry);
+                                    }
+                                    break;
+                                case REMOVED:
+                                    int removedIndex = getJournalEntryIndexById(entry.getId());
+                                    if (removedIndex != -1) {
+                                        journalEntries.remove(removedIndex);
+                                    }
+                                    break;
+                            }
+                        }
+                        filterJournalEntries(searchBar.getText().toString()); // Apply filter if any
+                    }
+                });
     }
 
-    private void openAccount() {
-        // Navigate to Account screen
-        Toast.makeText(this, "Opening Account", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, AccountActivity.class));
+
+    private void filterJournalEntries(String query) {
+        filteredJournalEntries.clear();
+        if (query.isEmpty()) {
+            filteredJournalEntries.addAll(journalEntries);
+        } else {
+            for (JournalEntry entry : journalEntries) {
+                if (entry.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                        entry.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                    filteredJournalEntries.add(entry);
+                }
+            }
+        }
+        journalAdapter.notifyDataSetChanged();
     }
 
-    private void openAddJournalEntry() {
-        // Navigate to Add Journal Entry screen
-        Toast.makeText(this, "Add new Journal Entry", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, AddJournalEntryActivity.class));*/
+    private int getJournalEntryIndexById(String id) {
+        for (int i = 0; i < journalEntries.size(); i++) {
+            if (journalEntries.get(i).getId().equals(id)) {
+                return i;
+            }
+        }
+        return -1;
     }
-
+}

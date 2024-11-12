@@ -11,19 +11,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.List;
 
 public class JournalEntryAdapter extends RecyclerView.Adapter<JournalEntryAdapter.JournalEntryViewHolder> {
 
     private List<JournalEntry> journalEntries;
     private Context context;
-    private String userId; // userId field to manage entries per user
-    private FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore instance
+    private String userId;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    // Constructor to initialize context, journal entries list, and userId
     public JournalEntryAdapter(Context context, List<JournalEntry> journalEntries, String userId) {
         this.context = context;
         this.journalEntries = journalEntries;
@@ -44,29 +41,26 @@ public class JournalEntryAdapter extends RecyclerView.Adapter<JournalEntryAdapte
         holder.entryDate.setText(entry.getDate());
         holder.entryPreview.setText(entry.getDescription());
 
-        // Set click listener for the entire item to navigate to expandjournal with full details
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, expandjournal.class);
             intent.putExtra("title", entry.getTitle());
             intent.putExtra("date", entry.getDate());
-            intent.putExtra("description", entry.getDescription()); // Use description instead of preview
-            intent.putExtra("entryId", entry.getId()); // Pass the unique entry ID
-            intent.putExtra("userId", userId); // Pass userId for context
+            intent.putExtra("description", entry.getDescription());
+            intent.putExtra("entryId", entry.getId());
+            intent.putExtra("userId", userId);
             context.startActivity(intent);
         });
 
-        // Set click listener for the edit icon to navigate to editjournal with full details
         holder.editIcon.setOnClickListener(v -> {
             Intent intent = new Intent(context, editjournal.class);
             intent.putExtra("title", entry.getTitle());
             intent.putExtra("date", entry.getDate());
-            intent.putExtra("description", entry.getDescription()); // Use description instead of preview
-            intent.putExtra("entryId", entry.getId()); // Pass the unique entry ID
-            intent.putExtra("userId", userId); // Pass userId for context
+            intent.putExtra("description", entry.getDescription());
+            intent.putExtra("entryId", entry.getId());
+            intent.putExtra("userId", userId);
             context.startActivity(intent);
         });
 
-        // Set click listener for the delete icon to show a confirmation dialog
         holder.deleteIcon.setOnClickListener(v -> showDeleteConfirmationDialog(entry, position));
     }
 
@@ -74,24 +68,33 @@ public class JournalEntryAdapter extends RecyclerView.Adapter<JournalEntryAdapte
         new AlertDialog.Builder(context)
                 .setTitle("Delete Journal")
                 .setMessage("Are you sure you want to delete this journal entry?")
-                .setPositiveButton("Yes", (dialog, which) -> deleteJournalEntry(entry, position))
+                .setPositiveButton("Yes", (dialog, which) -> markEntryAsDeletedAndTransfer(entry, position))
                 .setNegativeButton("No", null)
                 .show();
     }
 
-    private void deleteJournalEntry(JournalEntry entry, int position) {
-        // Access the journal entry in Firestore using the "journal" collection and entry ID
-        db.collection("journal")
-                .document(entry.getId()) // Use the journal entry's document ID
-                .delete()
+    private void markEntryAsDeletedAndTransfer(JournalEntry entry, int position) {
+        // Step 1: Update the status in the "journalentries" collection
+        db.collection("journalEntries")
+                .document(entry.getId())
+                .update("status", "deleted")
                 .addOnSuccessListener(aVoid -> {
-                    // Remove from local list and notify adapter
-                    journalEntries.remove(position);
-                    notifyItemRemoved(position);
-                    Toast.makeText(context, "Journal entry deleted", Toast.LENGTH_SHORT).show();
+                    // Step 2: Transfer to "journaldeleted" collection
+                    db.collection("journaldeleted")
+                            .document(entry.getId())
+                            .set(entry)
+                            .addOnSuccessListener(aVoid2 -> {
+                                // Step 3: Update the local list and RecyclerView
+                                journalEntries.remove(position);
+                                notifyItemRemoved(position);
+                                Toast.makeText(context, "Journal entry marked as deleted and transferred", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(context, "Failed to transfer journal entry to deleted collection", Toast.LENGTH_SHORT).show();
+                            });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(context, "Failed to delete journal entry", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Failed to update journal entry status", Toast.LENGTH_SHORT).show();
                 });
     }
 

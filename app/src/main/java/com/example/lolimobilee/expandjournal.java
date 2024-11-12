@@ -1,10 +1,10 @@
 package com.example.lolimobilee;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,13 +15,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class expandjournal extends AppCompatActivity {
 
     private TextView journalTitle, journalDate, journalDescription;
-    private String entryId; // Firestore document ID for the journal entry
-    private FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore instance
+    private String entryId, userId;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private BottomNavBar bottomNavBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,6 @@ public class expandjournal extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize views
         journalTitle = findViewById(R.id.journalTitle);
         journalDate = findViewById(R.id.journalDate);
         journalDescription = findViewById(R.id.journalDescription);
@@ -44,17 +45,19 @@ public class expandjournal extends AppCompatActivity {
         Button deleteButton = findViewById(R.id.deleteButton);
         ImageButton backButton = findViewById(R.id.backButton);
 
-        // Retrieve data from Intent
         Intent intent = getIntent();
         entryId = intent.getStringExtra("entryId");
+        userId = intent.getStringExtra("userId");
         String title = intent.getStringExtra("title");
         String date = intent.getStringExtra("date");
         String description = intent.getStringExtra("description");
 
-        // Set data in TextView fields
+        // Set journal details in TextViews
         journalTitle.setText(title);
         journalDate.setText(date);
         journalDescription.setText(description);
+
+        setupBottomNavigation();
 
         // Set up Back button to go back
         backButton.setOnClickListener(v -> finish());
@@ -63,7 +66,9 @@ public class expandjournal extends AppCompatActivity {
         editButton.setOnClickListener(v -> {
             Intent editIntent = new Intent(expandjournal.this, editjournal.class);
             editIntent.putExtra("entryId", entryId);
+            editIntent.putExtra("userId", userId);
             editIntent.putExtra("title", title);
+            editIntent.putExtra("date", date);
             editIntent.putExtra("description", description);
             startActivity(editIntent);
         });
@@ -92,5 +97,15 @@ public class expandjournal extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(expandjournal.this, "Failed to delete journal entry", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void setupBottomNavigation() {
+        ImageView assessmentIcon = findViewById(R.id.assessment);
+        ImageView bookIcon = findViewById(R.id.bookIcon);
+        ImageView taskIcon = findViewById(R.id.taskIcon);
+        ImageView accountIcon = findViewById(R.id.account);
+        FloatingActionButton dashboardIcon = findViewById(R.id.dashboardIcon);
+
+        bottomNavBar = new BottomNavBar(this, userId, assessmentIcon, bookIcon, taskIcon, accountIcon, dashboardIcon);
     }
 }

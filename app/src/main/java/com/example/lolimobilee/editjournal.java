@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -14,14 +15,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class editjournal extends AppCompatActivity {
 
     private EditText journalTitleInput, journalDescriptionInput;
     private Button saveButton, cancelButton;
-    private String entryId; // Firestore document ID for the journal entry
+    private String entryId;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String userId;
+    private BottomNavBar bottomNavBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +43,14 @@ public class editjournal extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize views
         journalTitleInput = findViewById(R.id.journalTitleInput);
         journalDescriptionInput = findViewById(R.id.journalDescriptionInput);
         saveButton = findViewById(R.id.saveButton);
         cancelButton = findViewById(R.id.cancelButton);
         ImageButton backButton = findViewById(R.id.backButton);
 
-        // Retrieve data from Intent
         Intent intent = getIntent();
+        userId = intent.getStringExtra("userId");
         entryId = intent.getStringExtra("entryId");
         String title = intent.getStringExtra("title");
         String description = intent.getStringExtra("description");
@@ -52,6 +58,8 @@ public class editjournal extends AppCompatActivity {
         // Set initial data in EditText fields
         journalTitleInput.setText(title);
         journalDescriptionInput.setText(description);
+
+        setupBottomNavigation();
 
         // Set up Save button click listener
         saveButton.setOnClickListener(v -> updateJournalEntry());
@@ -73,9 +81,14 @@ public class editjournal extends AppCompatActivity {
             return;
         }
 
+        // Prepare data map for updating Firestore entry
+        Map<String, Object> updatedData = new HashMap<>();
+        updatedData.put("title", updatedTitle);
+        updatedData.put("description", updatedDescription);
+
         // Update Firestore entry
         db.collection("journalEntries").document(entryId)
-                .update("title", updatedTitle, "description", updatedDescription)
+                .update(updatedData)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(editjournal.this, "Journal entry updated", Toast.LENGTH_SHORT).show();
                     finish(); // Close activity after saving
@@ -83,5 +96,15 @@ public class editjournal extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(editjournal.this, "Failed to update entry", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void setupBottomNavigation() {
+        ImageView assessmentIcon = findViewById(R.id.assessment);
+        ImageView bookIcon = findViewById(R.id.bookIcon);
+        ImageView taskIcon = findViewById(R.id.taskIcon);
+        ImageView accountIcon = findViewById(R.id.account);
+        FloatingActionButton dashboardIcon = findViewById(R.id.dashboardIcon);
+
+        bottomNavBar = new BottomNavBar(this, userId, assessmentIcon, bookIcon, taskIcon, accountIcon, dashboardIcon);
     }
 }

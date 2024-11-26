@@ -40,8 +40,6 @@ public class journal extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_journal);
         userId = getIntent().getStringExtra("userId");
-
-        // Set up the search bar
         searchBar = findViewById(R.id.searchBar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -88,7 +86,7 @@ public class journal extends AppCompatActivity {
     private void loadJournalEntries() {
         db.collection("journalEntries")
                 .whereEqualTo("userId", userId)
-                .whereEqualTo("status", "created") // Only load entries with status "created"
+                .whereEqualTo("status", "created")
                 .addSnapshotListener((querySnapshot, e) -> {
                     if (e != null) {
                         Log.w(TAG, "Listen failed.", e);
@@ -117,7 +115,7 @@ public class journal extends AppCompatActivity {
                                     break;
                             }
                         }
-                        filterJournalEntries(searchBar.getText().toString()); // Apply filter if any
+                        filterJournalEntries(searchBar.getText().toString());
                     }
                 });
     }

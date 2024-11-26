@@ -21,11 +21,23 @@
         android:theme="@style/Theme.LoliMobilee"
         tools:targetApi="31">
         <activity
-            android:name=".myaccount"
+            android:name=".listeningassessment"
             android:exported="false" />
         <activity
-            android:name=".assessment"
+            android:name=".conversationalskillspre"
             android:exported="false" />
+        <activity
+            android:name=".form_preassessment"
+            android:exported="false" />
+        <activity
+            android:name=".userlog"
+            android:exported="false" />
+        <activity
+            android:name=".myaccount"
+            android:exported="true" />
+        <activity
+            android:name=".assessment"
+            android:exported="true" />
         <activity
             android:name=".taskmanager"
             android:exported="true" />

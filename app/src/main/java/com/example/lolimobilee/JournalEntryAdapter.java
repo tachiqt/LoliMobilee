@@ -11,7 +11,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
 
 public class JournalEntryAdapter extends RecyclerView.Adapter<JournalEntryAdapter.JournalEntryViewHolder> {
@@ -74,20 +77,23 @@ public class JournalEntryAdapter extends RecyclerView.Adapter<JournalEntryAdapte
     }
 
     private void markEntryAsDeletedAndTransfer(JournalEntry entry, int position) {
-        // Step 1: Update the status in the "journalentries" collection
         db.collection("journalEntries")
                 .document(entry.getId())
                 .update("status", "deleted")
                 .addOnSuccessListener(aVoid -> {
-                    // Step 2: Transfer to "journaldeleted" collection
                     db.collection("journaldeleted")
                             .document(entry.getId())
                             .set(entry)
                             .addOnSuccessListener(aVoid2 -> {
-                                // Step 3: Update the local list and RecyclerView
+                                // Remove the item and notify the adapter
                                 journalEntries.remove(position);
                                 notifyItemRemoved(position);
-                                Toast.makeText(context, "Journal entry marked as deleted and transferred", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Journal entry deleted and transferred", Toast.LENGTH_SHORT).show();
+
+                                // Refresh via activity
+                                if (context instanceof homepage) {
+                                    ((homepage) context).refreshJournalList();
+                                }
                             })
                             .addOnFailureListener(e -> {
                                 Toast.makeText(context, "Failed to transfer journal entry to deleted collection", Toast.LENGTH_SHORT).show();

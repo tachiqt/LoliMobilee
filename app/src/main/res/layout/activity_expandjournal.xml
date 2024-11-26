@@ -9,7 +9,6 @@
     android:background="@drawable/gradient_background"
     tools:context=".expandjournal">
 
-    <!-- Toolbar with Back Button and Title -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
@@ -42,7 +41,6 @@
             android:layout_gravity="center" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Journal Details Layout -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -51,8 +49,6 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Title Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,8 +80,6 @@
                     android:textColor="@color/gray" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Description Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -110,8 +104,6 @@
                     android:padding="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Edit and Delete Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -250,7 +242,6 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Floating Dashboard Button Overlapping Bottom Navigation -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/dashboardIcon"
         android:layout_width="wrap_content"

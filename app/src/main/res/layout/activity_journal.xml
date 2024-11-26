@@ -50,8 +50,6 @@
             android:textColorHint="@color/black"
             android:drawableStart="@drawable/search_icon" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- RecyclerView for Journal Entries -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/journalRecyclerView"
         android:layout_width="0dp"
@@ -79,8 +77,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp" />
-
-    <!-- Bottom Navigation Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView3"
         android:layout_width="match_parent"
@@ -194,7 +190,6 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Floating Dashboard Button Overlapping Bottom Navigation -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/dashboardIcon"
         android:layout_width="wrap_content"

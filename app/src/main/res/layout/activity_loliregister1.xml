@@ -8,6 +8,17 @@
     android:background="@drawable/gradient_background"
     tools:context=".loliregister1">
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:lottie_url="https://lottie.host/8551b036-95a4-4614-a63f-1c1d85b4f6a1/lziyDRIvTF.lottie"
+        app:lottie_autoPlay="true"
+        android:background="@drawable/gradient_background"
+        app:lottie_loop="true"
+        app:lottie_speed="3.0" />
+
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="440dp"
@@ -182,7 +193,11 @@
             app:cornerRadius="10dp" />
 
 
+
+
     </LinearLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

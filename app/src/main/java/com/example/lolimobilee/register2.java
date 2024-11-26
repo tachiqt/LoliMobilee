@@ -5,13 +5,16 @@ import static android.content.ContentValues.TAG;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,6 +29,7 @@ import java.util.Map;
 public class register2 extends AppCompatActivity {
 
     private EditText etHobbies, etInterests, etTalents;
+    private LottieAnimationView successAnimation, loadingAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +38,12 @@ public class register2 extends AppCompatActivity {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+        // Initialize UI elements
         etHobbies = findViewById(R.id.etHobbies);
         etInterests = findViewById(R.id.etInterests);
         etTalents = findViewById(R.id.etTalents);
+        loadingAnimation = findViewById(R.id.loadingAnimation);
+
         CheckBox acceptTerms = findViewById(R.id.acceptTerms);
         CheckBox acceptPrivacyPolicy = findViewById(R.id.acceptPrivacyPolicy);
 
@@ -71,7 +78,7 @@ public class register2 extends AppCompatActivity {
                 return;
             }
 
-            // Proceed with saving data
+            // Show confirmation dialog
             showConfirmationDialog(userId, fullName, gender, birthday, email, hobbies, interests, talents, age);
         });
 
@@ -102,6 +109,16 @@ public class register2 extends AppCompatActivity {
         }
     }
 
+    private void showLoadingAnimation(boolean show) {
+        if (loadingAnimation == null) return;
+        if (show) {
+            loadingAnimation.setVisibility(View.VISIBLE);
+            loadingAnimation.playAnimation();
+        } else {
+            loadingAnimation.pauseAnimation();
+            loadingAnimation.setVisibility(View.GONE);
+        }
+    }
 
 
     private void showConfirmationDialog(String userId, String fullName, String gender, String birthday, String email, String hobbies, String interests, String talents, int age) {
@@ -109,7 +126,11 @@ public class register2 extends AppCompatActivity {
                 .setTitle("Confirmation")
                 .setMessage("Are you sure you want to submit?")
                 .setPositiveButton("OK", (dialog, which) -> {
+                    showLoadingAnimation(true);
                     saveDataToFirestore(userId, fullName, gender, birthday, email, hobbies, interests, talents, age);
+                    Toast.makeText(this, "You're all set!", Toast.LENGTH_SHORT).show();
+                    navigateToLogin();
+
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -135,7 +156,6 @@ public class register2 extends AppCompatActivity {
 
     private void saveDataToFirestore(String userId, String fullName, String gender, String birthday, String email, String hobbies, String interests, String talents, int age) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         Map<String, Object> user = new HashMap<>();
         user.put("fullName", fullName);
         user.put("gender", gender);
@@ -146,14 +166,12 @@ public class register2 extends AppCompatActivity {
         user.put("talents", talents);
         user.put("age", age);
 
-        // Save directly to personal_information collection
         db.collection("personal_information").document(userId).set(user)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "User data saved in Firestore");
-                    navigateToLogin();
+                    showLoadingAnimation(false);
                 })
                 .addOnFailureListener(e -> {
+                    showLoadingAnimation(false);
                     Toast.makeText(this, "Error saving data", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "Error saving user data", e);
                 });

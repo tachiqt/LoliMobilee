@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,9 +16,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,16 +38,18 @@ public class homepage extends AppCompatActivity implements TaskAdapter.OnTaskCom
     private TaskAdapter taskAdapter;
     private String userId;
     private BottomNavBar bottomNavBar;
+    private TextView statSummary;
+    private TextView noJournalText, noTaskText;
+    private LottieAnimationView loadingAnimation; // Lottie animation view
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-
         userId = getIntent().getStringExtra("userId");
         if (userId == null) {
-            userId = "";  // Default value if userId is missing
+            userId = "";
             Log.e(TAG, "User ID not passed; defaulting to empty string.");
         }
 
@@ -54,32 +60,33 @@ public class homepage extends AppCompatActivity implements TaskAdapter.OnTaskCom
             return insets;
         });
 
-        // Initialize greeting text
         TextView helloText = findViewById(R.id.helloText);
+        statSummary = findViewById(R.id.statSummary);
+        noJournalText = findViewById(R.id.noJournalText);
+        noTaskText = findViewById(R.id.noTaskText);
+        loadingAnimation = findViewById(R.id.loadingAnimation);
+
         if (!userId.isEmpty()) {
             loadUserData(helloText);
         } else {
             helloText.setText("Hi, User!");
         }
 
-        // Initialize RecyclerViews and adapters
         setupJournalRecyclerView();
         setupTaskRecyclerView();
-
-        // Load data from Firestore
-        loadJournalEntries();
-        loadTasks();
-
-
         setupBottomNavigation();
+
         findViewById(R.id.addJournalButton).setOnClickListener(v -> {
             Intent addIntent = new Intent(homepage.this, addjournal.class);
             addIntent.putExtra("userId", userId);
             startActivity(addIntent);
         });
 
-
         findViewById(R.id.submitButton).setOnClickListener(v -> markAllCheckedTasksAsDone());
+
+        // Initial Data Load
+        refreshJournalList();
+        refreshTaskList();
     }
 
     private void setupJournalRecyclerView() {
@@ -97,14 +104,13 @@ public class homepage extends AppCompatActivity implements TaskAdapter.OnTaskCom
         taskAdapter = new TaskAdapter(tasks, this);
         taskRecyclerView.setAdapter(taskAdapter);
     }
-    private void setupBottomNavigation() {
 
+    private void setupBottomNavigation() {
         ImageView assessmentIcon = findViewById(R.id.assessment);
         ImageView bookIcon = findViewById(R.id.bookIcon);
         ImageView taskIcon = findViewById(R.id.taskIcon);
         ImageView accountIcon = findViewById(R.id.account);
         FloatingActionButton dashboardIcon = findViewById(R.id.dashboardIcon);
-
 
         bottomNavBar = new BottomNavBar(this, userId, assessmentIcon, bookIcon, taskIcon, accountIcon, dashboardIcon);
     }
@@ -128,129 +134,115 @@ public class homepage extends AppCompatActivity implements TaskAdapter.OnTaskCom
                 });
     }
 
-    private void loadJournalEntries() {
+    public void refreshJournalList() {
+        showLoadingAnimation();
         db.collection("journalEntries")
                 .whereEqualTo("userId", userId)
-                .whereEqualTo("status", "created") // Only load entries with status "created"
-                .addSnapshotListener((querySnapshot, e) -> {
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e);
-                        return;
-                    }
-                    if (querySnapshot != null) {
-                        journalEntries.clear(); // Clear list to avoid duplications
-                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
-                            JournalEntry entry = dc.getDocument().toObject(JournalEntry.class);
-                            entry.setId(dc.getDocument().getId());
-                            switch (dc.getType()) {
-                                case ADDED:
-                                    journalEntries.add(entry);
-                                    journalAdapter.notifyItemInserted(journalEntries.size() - 1);
-                                    break;
-                                case MODIFIED:
-                                    int modifiedIndex = getJournalEntryIndexById(entry.getId());
-                                    if (modifiedIndex != -1) {
-                                        journalEntries.set(modifiedIndex, entry);
-                                        journalAdapter.notifyItemChanged(modifiedIndex);
-                                    }
-                                    break;
-                                case REMOVED:
-                                    int removedIndex = getJournalEntryIndexById(entry.getId());
-                                    if (removedIndex != -1) {
-                                        journalEntries.remove(removedIndex);
-                                        journalAdapter.notifyItemRemoved(removedIndex);
-                                    }
-                                    break;
-                            }
+                .whereEqualTo("status", "created")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    journalEntries.clear();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        JournalEntry entry = document.toObject(JournalEntry.class);
+                        if (entry != null) {
+                            entry.setId(document.getId());
+                            journalEntries.add(entry);
                         }
                     }
+                    journalAdapter.notifyDataSetChanged();
+                    updateEmptyJournalState();
+                    updateStatSummary();
+                    hideLoadingAnimation();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to refresh journal list", Toast.LENGTH_SHORT).show();
+                    hideLoadingAnimation();
                 });
     }
 
-
-    private void loadTasks() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String today = dateFormat.format(new Date());
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -1);
-        String yesterday = dateFormat.format(calendar.getTime());
+    public void refreshTaskList() {
+        showLoadingAnimation();
 
         db.collection("tasks")
                 .whereEqualTo("userId", userId)
                 .whereEqualTo("status", "incomplete")
-                .whereIn("date", Arrays.asList(today, yesterday))
-                .addSnapshotListener((querySnapshot, e) -> {
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e);
-                        return;
-                    }
-                    if (querySnapshot != null) {
-                        tasks.clear(); // Avoid duplications
-                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
-                            Task task = dc.getDocument().toObject(Task.class);
-                            task.setId(dc.getDocument().getId());
-                            switch (dc.getType()) {
-                                case ADDED:
-                                    tasks.add(task);
-                                    taskAdapter.notifyItemInserted(tasks.size() - 1);
-                                    break;
-                                case MODIFIED:
-                                    int modifiedIndex = getTaskIndexById(task.getId());
-                                    if (modifiedIndex != -1) {
-                                        tasks.set(modifiedIndex, task);
-                                        taskAdapter.notifyItemChanged(modifiedIndex);
-                                    }
-                                    break;
-                                case REMOVED:
-                                    int removedIndex = getTaskIndexById(task.getId());
-                                    if (removedIndex != -1) {
-                                        tasks.remove(removedIndex);
-                                        taskAdapter.notifyItemRemoved(removedIndex);
-                                    }
-                                    break;
-                            }
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    tasks.clear();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Task task = document.toObject(Task.class);
+                        if (task != null) {
+                            task.setId(document.getId());
+                            tasks.add(task);
                         }
-                        findViewById(R.id.noPendingTasks).setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
                     }
+                    taskAdapter.notifyDataSetChanged();
+                    updateEmptyTaskState();
+                    updateStatSummary();
+                    hideLoadingAnimation();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to refresh task list", Toast.LENGTH_SHORT).show();
+                    hideLoadingAnimation();
                 });
     }
 
-    private int getTaskIndexById(String id) {
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getId().equals(id)) {
-                return i;
-            }
-        }
-        return -1;
+
+    private void updateEmptyJournalState() {
+        noJournalText.setVisibility(journalEntries.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
-    private int getJournalEntryIndexById(String id) {
-        for (int i = 0; i < journalEntries.size(); i++) {
-            if (journalEntries.get(i).getId().equals(id)) {
-                return i;
-            }
-        }
-        return -1;
+    private void updateEmptyTaskState() {
+        noTaskText.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateStatSummary() {
+        String summary = String.format("You have %d journal entries and %d tasks to complete.",
+                journalEntries.size(), tasks.size());
+        statSummary.setText(summary);
+    }
+
+    private void showLoadingAnimation() {
+        loadingAnimation.setVisibility(View.VISIBLE);
+        loadingAnimation.playAnimation();
+    }
+
+    private void hideLoadingAnimation() {
+        loadingAnimation.cancelAnimation();
+        loadingAnimation.setVisibility(View.GONE);
     }
 
     @Override
     public void onTaskComplete(Task task, boolean isComplete) {
         db.collection("tasks").document(task.getId())
                 .update("isCompleted", isComplete)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Task completion status updated"))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Task completion status updated");
+                    refreshTaskList();
+                })
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating task", e));
     }
 
-    private void markAllCheckedTasksAsDone() {
+
+
+private void markAllCheckedTasksAsDone() {
+        boolean hasCheckedTasks = false;
+
         for (Task task : tasks) {
             if (task.isChecked()) {
+                hasCheckedTasks = true;
                 db.collection("tasks").document(task.getId())
                         .update("status", "done", "isChecked", false)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Task marked as done: " + task.getId()))
                         .addOnFailureListener(e -> Log.e(TAG, "Error updating task", e));
             }
         }
-        taskAdapter.notifyDataSetChanged();
-        Toast.makeText(this, "All checked tasks marked as done", Toast.LENGTH_SHORT).show();
+
+        if (hasCheckedTasks) {
+            refreshTaskList();
+            Toast.makeText(this, "All checked tasks marked as done", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No marked tasks to complete", Toast.LENGTH_SHORT).show();
+        }
     }
 }

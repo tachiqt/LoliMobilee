@@ -2,12 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     tools:context=".homepage">
+
+
 
     <!-- Scrollable Content -->
     <ScrollView
@@ -21,16 +23,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <!-- Welcome Card -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/dark_purple"
-                app:cardElevation="4dp"
-                android:layout_margin="16dp">
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -40,31 +43,62 @@
 
                     <ImageView
                         android:id="@+id/imageView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center"
                         android:scaleType="centerInside"
-                        app:srcCompat="@drawable/eye" />
+                        app:srcCompat="@drawable/eye"
+                        android:contentDescription="Logo for the app" />
 
                     <TextView
                         android:id="@+id/helloText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="12dp"
+                        android:text="Hello, User!"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/introductionText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:text="Explore your progress and take charge of your day!"
+                        android:textColor="@color/light_gray"
+                        android:textSize="14sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/light_gray" />
+
+                    <TextView
+                        android:id="@+id/statSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="You have 5 journal entries and 2 tasks to complete."
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Journal Overview Card -->
+            <!-- Journal Section -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardElevation="6dp"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="6dp">
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -73,13 +107,24 @@
                     android:padding="12dp">
 
                     <TextView
-                        android:id="@+id/journalTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Journal Overview"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/dark_purple" />
+
+                    <!-- Empty State for Journal -->
+                    <TextView
+                        android:id="@+id/noJournalText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="No journal entries available"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/journalRecyclerView"
@@ -102,15 +147,13 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Task Manager Card -->
+            <!-- Task Manager Section -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/taskManagerCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp">
+                app:cardBackgroundColor="@color/white"
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -118,25 +161,26 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/taskManagerTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingBottom="8dp">
+                        android:text="Task Manager"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/dark_purple" />
 
-                        <TextView
-                            android:id="@+id/taskManagerTitle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Task Manager"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/dark_purple" />
-
-
-                    </LinearLayout>
+                    <!-- Empty State for Tasks -->
+                    <TextView
+                        android:id="@+id/noTaskText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="No tasks available"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/taskRecyclerView"
@@ -145,42 +189,37 @@
                         android:layout_marginTop="8dp"
                         android:paddingBottom="8dp" />
 
-                    <TextView
-                        android:id="@+id/noPendingTasks"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No tasks available"
-                        android:textColor="@color/gray"
-                        android:layout_gravity="center"
-                        android:visibility="gone" />
-
-
-                    <com.google.android.material.button.MaterialButton
+                    <Button
                         android:id="@+id/submitButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="Submit"
                         android:layout_gravity="end"
-                        app:boxCornerRadiusBottomEnd="10dp"
-                        app:boxCornerRadiusBottomStart="10dp"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
                         android:backgroundTint="@color/dark_purple"
-                        android:text="Done"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"
-                        android:padding="12dp" />
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation Card with Center Floating Action Button -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:lottie_url="https://lottie.host/8551b036-95a4-4614-a63f-1c1d85b4f6a1/lziyDRIvTF.lottie"
+        app:lottie_autoPlay="true"
+        android:background="@drawable/gradient_background"
+        app:lottie_loop="true"
+        app:lottie_speed="3.0" />
+
+    <!-- Bottom Navigation Bar -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:cardBackgroundColor="@color/purple"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -237,6 +276,7 @@
                     android:textColor="@android:color/white" />
             </LinearLayout>
 
+            <!-- Spacer for Floating Action Button -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -288,6 +328,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Floating Action Button for Dashboard -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/dashboardIcon"
         android:layout_width="wrap_content"
@@ -302,5 +343,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:fabCustomSize="70dp"
         android:layout_marginBottom="24dp"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

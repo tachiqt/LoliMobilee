@@ -30,8 +30,6 @@ public class expandjournal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_expandjournal);
-
-        // Set padding for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -51,18 +49,12 @@ public class expandjournal extends AppCompatActivity {
         String title = intent.getStringExtra("title");
         String date = intent.getStringExtra("date");
         String description = intent.getStringExtra("description");
-
-        // Set journal details in TextViews
         journalTitle.setText(title);
         journalDate.setText(date);
         journalDescription.setText(description);
 
         setupBottomNavigation();
-
-        // Set up Back button to go back
         backButton.setOnClickListener(v -> finish());
-
-        // Set up Edit button to open editjournal activity
         editButton.setOnClickListener(v -> {
             Intent editIntent = new Intent(expandjournal.this, editjournal.class);
             editIntent.putExtra("entryId", entryId);
@@ -72,8 +64,6 @@ public class expandjournal extends AppCompatActivity {
             editIntent.putExtra("description", description);
             startActivity(editIntent);
         });
-
-        // Set up Delete button with a confirmation dialog
         deleteButton.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
@@ -87,12 +77,11 @@ public class expandjournal extends AppCompatActivity {
     }
 
     private void deleteJournalEntry() {
-        // Delete the journal entry from Firestore using entryId
         db.collection("journalEntries").document(entryId)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(expandjournal.this, "Journal entry deleted", Toast.LENGTH_SHORT).show();
-                    finish(); // Close the activity after deletion
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(expandjournal.this, "Failed to delete journal entry", Toast.LENGTH_SHORT).show();

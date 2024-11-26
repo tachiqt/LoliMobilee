@@ -55,19 +55,13 @@ public class editjournal extends AppCompatActivity {
         String title = intent.getStringExtra("title");
         String description = intent.getStringExtra("description");
 
-        // Set initial data in EditText fields
+
         journalTitleInput.setText(title);
         journalDescriptionInput.setText(description);
 
         setupBottomNavigation();
-
-        // Set up Save button click listener
         saveButton.setOnClickListener(v -> updateJournalEntry());
-
-        // Set up Cancel button click listener
         cancelButton.setOnClickListener(v -> finish());
-
-        // Set up Back button click listener
         backButton.setOnClickListener(v -> finish());
     }
 
@@ -80,18 +74,15 @@ public class editjournal extends AppCompatActivity {
             Toast.makeText(this, "Title and description cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Prepare data map for updating Firestore entry
         Map<String, Object> updatedData = new HashMap<>();
         updatedData.put("title", updatedTitle);
         updatedData.put("description", updatedDescription);
 
-        // Update Firestore entry
         db.collection("journalEntries").document(entryId)
                 .update(updatedData)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(editjournal.this, "Journal entry updated", Toast.LENGTH_SHORT).show();
-                    finish(); // Close activity after saving
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(editjournal.this, "Failed to update entry", Toast.LENGTH_SHORT).show();

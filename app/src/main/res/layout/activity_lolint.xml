@@ -8,48 +8,28 @@
     android:background="@drawable/gradient_background"
     tools:context=".Lolint">
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="436dp"
-        android:layout_height="343dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.542"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ulo" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="144dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/pink_cute_ribbon_quote_phone_wallpaper" />
-
+    <!-- CardView with Chat Bubble -->
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/loginnav"
+        app:layout_constraintBottom_toTopOf="@id/lottieAnimation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6  ">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/introtxt"
@@ -59,26 +39,42 @@
                 android:text="Hi! I'm Loli, your companion robot here to help you improve your social skills. I'll ask you a few questions to get to know you better so I can tailor my support just for you. Your info stays private—let's get started!"
                 android:textAlignment="center"
                 android:textColor="@color/purple_500"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
-            <ImageView
-                android:id="@+id/imgnext"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center_horizontal"
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/nextButtonAnimation"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_marginTop="16dp"
-                app:srcCompat="@drawable/baseline_arrow_right_alt_24"
-                tools:visibility="gone" />
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="false"
+                app:lottie_speed="3.0"
+                app:lottie_url="https://lottie.host/4e211e1e-6633-41b6-870e-82022868d0da/gjWosOmPb0.lottie" />
 
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
 
+    <!-- Robot Lottie Animation -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimation"
+        android:layout_width="600dp"
+        android:layout_height="600dp"
+        app:layout_constraintTop_toBottomOf="@id/cardView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_speed="1.0"
+        app:lottie_url="https://lottie.host/a6a95f65-3573-4ed1-bdd1-64f44b4b96cc/nWzhuexsWA.lottie" />
+
+    <!-- Navigation Text -->
     <TextView
         android:id="@+id/loginnav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="16dp"
         android:text="Already Have an Account?"
         android:textColor="#EBEAED"
         android:textSize="16sp"
@@ -86,6 +82,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

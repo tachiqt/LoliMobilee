@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -16,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,6 +33,7 @@ public class loliregister1 extends AppCompatActivity {
     private SimpleDateFormat dateFormat;
     private EditText birthday;
     private FirebaseAuth mAuth;
+    private LottieAnimationView loadingAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,6 @@ public class loliregister1 extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loliregister1);
 
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -56,6 +58,8 @@ public class loliregister1 extends AppCompatActivity {
         Button nextButton = findViewById(R.id.btnnext);
         Button cancelButton = findViewById(R.id.btncancel);
         TextView alaccount = findViewById(R.id.loginnav);
+        loadingAnimation = findViewById(R.id.loadingAnimation); // Initialize loading animation
+
         dateFormat = new SimpleDateFormat("MM/dd/yy", Locale.US);
         birthday.setHint("Birthday (MM/DD/YY)");
         birthday.setOnClickListener(v -> showDatePickerDialog());
@@ -90,6 +94,7 @@ public class loliregister1 extends AppCompatActivity {
                 return;
             }
 
+            showLoadingAnimation(true); // Show loading animation
             mAuth.createUserWithEmailAndPassword(emailText, passwordText)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
@@ -103,13 +108,28 @@ public class loliregister1 extends AppCompatActivity {
                                 intent.putExtra("gender", gender);
                                 intent.putExtra("birthday", birthdayText);
                                 intent.putExtra("email", emailText);
+                                showLoadingAnimation(false); // Hide loading animation
                                 startActivity(intent);
                             }
+                        } else {
+                            showLoadingAnimation(false); // Hide loading animation
+                            Toast.makeText(this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
                         }
                     });
         });
 
         cancelButton.setOnClickListener(v -> showConfirmationDialog());
+    }
+
+    private void showLoadingAnimation(boolean show) {
+        if (loadingAnimation == null) return;
+        if (show) {
+            loadingAnimation.setVisibility(View.VISIBLE);
+            loadingAnimation.playAnimation();
+        } else {
+            loadingAnimation.pauseAnimation();
+            loadingAnimation.setVisibility(View.GONE);
+        }
     }
 
     private void showDatePickerDialog() {
@@ -125,8 +145,6 @@ public class loliregister1 extends AppCompatActivity {
                     selectedDate.set(Calendar.YEAR, year1);
                     selectedDate.set(Calendar.MONTH, monthOfYear);
                     selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-                    // Format the date as "yyyy-MM-dd"
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                     String formattedDate = dateFormat.format(selectedDate.getTime());
                     birthday.setText(formattedDate);
@@ -134,7 +152,6 @@ public class loliregister1 extends AppCompatActivity {
                 year, month, day);
         datePickerDialog.show();
     }
-
 
     private void showConfirmationDialog() {
         new AlertDialog.Builder(this)
@@ -175,8 +192,13 @@ public class loliregister1 extends AppCompatActivity {
         userInfo.put("birthday", birthday);
 
         db.collection("users").document(userId).set(userInfo)
-                .addOnSuccessListener(aVoid -> Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Failed to save user info", Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    showLoadingAnimation(false); // Hide loading animation
+                    Toast.makeText(this, "Failed to save user info", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private boolean isValidEmail(String email) {

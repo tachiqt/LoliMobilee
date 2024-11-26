@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,7 +9,7 @@
     android:background="@drawable/gradient_background"
     tools:context=".login">
 
-    <!-- Header ImageView -->
+    <!-- Robot Images -->
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="436dp"
@@ -20,7 +21,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/head" />
 
-    <!-- Background ImageView -->
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="361dp"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/bodylogin" />
 
-    <!-- LinearLayout Container for Form Elements -->
+    <!-- Login Form Container -->
     <LinearLayout
         android:layout_width="394dp"
         android:layout_height="wrap_content"
@@ -45,7 +45,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.6">
 
-        <!-- Title TextView -->
         <TextView
             android:id="@+id/titleText"
             android:layout_width="match_parent"
@@ -58,7 +57,7 @@
             android:textSize="30sp"
             android:textStyle="bold" />
 
-        <!-- Email TextInputLayout and EditText -->
+        <!-- Email Input -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -80,7 +79,7 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Password TextInputLayout with Toggle and EditText -->
+        <!-- Password Input -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -104,7 +103,7 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Forgot Password TextView -->
+        <!-- Forgot Password -->
         <TextView
             android:id="@+id/forgotPassword"
             android:layout_width="wrap_content"
@@ -129,6 +128,7 @@
             android:textStyle="bold"
             app:cornerRadius="10dp" />
 
+        <!-- Register Navigation -->
         <TextView
             android:id="@+id/registernav"
             android:layout_width="wrap_content"
@@ -139,7 +139,18 @@
             android:textSize="16sp"
             android:gravity="center"
             android:layout_gravity="center" />
-
     </LinearLayout>
+
+    <!-- Lottie Animation (Full-Screen Overlay, Always on Top) -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        app:lottie_url="https://lottie.host/8551b036-95a4-4614-a63f-1c1d85b4f6a1/lziyDRIvTF.lottie"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="true"
+        android:background="@drawable/gradient_background" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,7 @@ public class JournalEntry {
     private String date;
     private String description;
 
-
+    // No-argument constructor (required for Firestore)
     public JournalEntry() {
     }
 

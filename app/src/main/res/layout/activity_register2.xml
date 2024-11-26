@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,6 +9,7 @@
     android:background="@drawable/gradient_background"
     tools:context=".register2">
 
+    <!-- Background Images -->
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="440dp"
@@ -28,6 +30,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/pink_cute_ribbon_quote_phone_wallpaper" />
 
+    <!-- Navigation Text -->
     <TextView
         android:id="@+id/loginnav"
         android:layout_width="wrap_content"
@@ -40,6 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Input Form -->
     <LinearLayout
         android:layout_width="394dp"
         android:layout_height="wrap_content"
@@ -64,7 +68,6 @@
             android:textSize="30sp"
             android:textStyle="bold" />
 
-        <!-- Text input for Hobbies -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -89,7 +92,6 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Text input for Interests -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -115,7 +117,6 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Text input for Talents -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -141,7 +142,6 @@
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Accept Terms CheckBox -->
         <CheckBox
             android:id="@+id/acceptTerms"
             android:layout_width="wrap_content"
@@ -159,7 +159,6 @@
             android:text="I accept the privacy policy"
             android:textColor="#555555"
             android:textSize="14sp" />
-
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNext"
@@ -182,7 +181,19 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             app:cornerRadius="10dp" />
-
     </LinearLayout>
+
+    <!-- Loading Animation (Full Screen) -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_speed="2.0"
+        app:lottie_url="https://lottie.host/8551b036-95a4-4614-a63f-1c1d85b4f6a1/lziyDRIvTF.lottie"
+        android:background="@drawable/gradient_background" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
